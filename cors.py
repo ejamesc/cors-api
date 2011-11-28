@@ -21,7 +21,7 @@ def get_module(modulecode):
 	if not entity:
 		abort(404, 'Module %s not found' % modulecode)
 	del entity['_id'] # the _id object isn't JSON serializable
-	return json.dumps(entity)
+	return Response(json.dumps(entity), mimetype='application/json')
 
 @app.route('/api/module/lecturetime/<modulecode>', methods=['GET'])
 def get_module_time(modulecode):
