@@ -6,9 +6,11 @@ from pymongo import Connection
 
 connection = Connection('localhost', 27017)
 db = connection.corsdatabase
-db['modules'].remove({})
+db['modules'].remove({}) #temporary hack - delete all records
 
 class CorsPipeline(object):
     def process_item(self, item, spider):
+    	"""For each item, insert into mongodb as dict
+    	"""
     	db['modules'].insert(dict(item))
         return item

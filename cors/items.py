@@ -6,6 +6,8 @@
 from scrapy.item import Item, Field
 
 class CorsItem(Item):
+    """scrapy data structure
+    """
     code = Field()
     name = Field()
     desc = Field()

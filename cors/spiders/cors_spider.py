@@ -1,8 +1,22 @@
+from datetime import date
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.selector import HtmlXPathSelector
 
 from cors.items import CorsItem
+
+def process_exam_date(exam):
+	"""Processes an exam date and returns a dict representation for saving to mongodb
+	:param exam string
+	:returns {date: <<date in ISO8601 format>>, time: <<AM or PM>>}
+	"""
+	try:
+		t = exam.split()
+		d = t[0].split('-')
+		return {'date': date(int(d[2]), int(d[1]), int(d[0])).isoformat(), 'time': t[1]}
+	except IndexError:
+		return exam
+
 
 class CorsSpider(CrawlSpider):
 	name = "cors"
@@ -38,13 +52,18 @@ class CorsSpider(CrawlSpider):
 		preclu = module.select('tr[position()=9]/td[position()=2]/text()').extract()
 		workload = module.select('tr[position()=10]/td[position()=2]/text()').extract()
 
+		# encode exam date to ISO8601
+		exam = exam[0].strip() if exam else u'null'
+		if exam != "No Exam Date.":
+			exam = process_exam_date(exam)
+
 		# strip() removes \n and \r; also note that lecture returns multiple strings in a list
-		item['code'] = code[0].strip() if code else u'null'
+		item['code'] = ' '.join(code[0].split()) if code else u'null'
 		item['name'] = name[0].strip() if name else u'null'
 		item['desc'] = desc[0].strip() if desc else u'null'
 		item['mc'] = mc[0].strip() if mc else u'null'
 		item['lecture_time_table'] = u' '.join([w.strip() for w in lecture]) if lecture else u'null'
-		item['exam'] = exam[0].strip() if exam else u'null'
+		item['exam'] = exam
 		item['prerequisite'] = prereq[0].strip() if prereq else u'null'
 		item['preclusion'] = preclu[0].strip() if preclu else u'null'
 		item['workload'] = workload[0].strip() if workload else u'null'
