@@ -7,6 +7,6 @@ This is an unofficial CORS API. It consists of a Scrapy scraper project and a Fl
 
 Work-in-progress notes:
 -----------------------
-The scraper takes about 18 minutes to run while on the NUS network.
-This project runs on MongoDB
-The scraper deletes everything in MongoDB before beginning a scrape job. #tofix
+* The scraper takes about 18 minutes to run while on the NUS network.
+* This project runs on MongoDB
+* The scraper deletes everything in MongoDB before beginning a scrape job. #tofix
