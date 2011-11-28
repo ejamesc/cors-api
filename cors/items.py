@@ -6,10 +6,9 @@
 from scrapy.item import Item, Field
 
 class CorsItem(Item):
-    # define the fields for your item here like:
     code = Field()
-    desc = Field()
     name = Field()
+    desc = Field()
     mc = Field()
     lecture_time_table = Field()
     exam = Field()

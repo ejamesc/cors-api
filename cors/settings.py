@@ -13,3 +13,7 @@ SPIDER_MODULES = ['cors.spiders']
 NEWSPIDER_MODULE = 'cors.spiders'
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 
+ITEM_PIPELINES = [
+	'cors.pipelines.CorsPipeline',
+]
+
