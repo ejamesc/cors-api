@@ -1,4 +1,6 @@
 from datetime import date
+from itertools import izip_longest
+
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.selector import HtmlXPathSelector
@@ -8,7 +10,8 @@ from cors.items import CorsItem
 def process_exam_date(exam):
 	"""Processes an exam date and returns a dict representation for saving to mongodb
 	:param exam string
-	:returns {date: <<date in ISO8601 format>>, time: <<AM or PM>>}
+	:returns {date: <<date in ISO8601 format>>, time (no standard): <<AM or PM or EVENING>>}
+	If there's an index error at any stage, this returns the original string
 	"""
 	try:
 		t = exam.split()
@@ -16,6 +19,13 @@ def process_exam_date(exam):
 		return {'date': date(int(d[2]), int(d[1]), int(d[0])).isoformat(), 'time': t[1]}
 	except IndexError:
 		return exam
+
+def grouper(n, iterable, fillvalue=None):
+    """Recipe taken from itertools docs
+    grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx
+    """
+    args = [iter(iterable)] * n
+    return izip_longest(fillvalue=fillvalue, *args)
 
 
 class CorsSpider(CrawlSpider):
@@ -57,6 +67,20 @@ class CorsSpider(CrawlSpider):
 		if exam != "No Exam Date.":
 			exam = process_exam_date(exam)
 
+		# process tutorials
+		if tutorials:
+			tut = grouper(4, tutorials)
+			res = []
+			for t in tut:
+				name, time, week, ballot = t
+				res.append({
+					'name':name.strip(),
+					'datetime':time.strip(),
+					'weekly occurrence': week.strip(),
+					'balloting availability': ballot.strip()})
+		else:
+			res = u'null'
+
 		item = CorsItem()
 
 		# strip() removes \n and \r; also note that lecture returns multiple strings in a list
@@ -65,7 +89,7 @@ class CorsSpider(CrawlSpider):
 		item['desc'] = desc[0].strip() if desc else u'null'
 		item['mc'] = mc[0].strip() if mc else u'null'
 		item['lecture_time_table'] = u' '.join([w.strip() for w in lecture]) if lecture else u'null'
-		item['tutorial_time_table'] = [l.strip() for l in tutorials] if tutorials else u'null'
+		item['tutorial_time_table'] = res
 		item['exam'] = exam
 		item['prerequisite'] = prereq[0].strip() if prereq else u'null'
 		item['preclusion'] = preclu[0].strip() if preclu else u'null'
