@@ -67,20 +67,6 @@ class CorsSpider(CrawlSpider):
 		if exam != "No Exam Date.":
 			exam = process_exam_date(exam)
 
-		# process tutorials
-		if tutorials:
-			tut = grouper(4, tutorials)
-			res = []
-			for t in tut:
-				name, time, week, ballot = t
-				res.append({
-					'name':name.strip(),
-					'datetime':time.strip(),
-					'weekly occurrence': week.strip(),
-					'balloting availability': ballot.strip()})
-		else:
-			res = u'null'
-
 		item = CorsItem()
 
 		# strip() removes \n and \r; also note that lecture returns multiple strings in a list
@@ -89,7 +75,7 @@ class CorsSpider(CrawlSpider):
 		item['desc'] = desc[0].strip() if desc else u'null'
 		item['mc'] = mc[0].strip() if mc else u'null'
 		item['lecture_time_table'] = u' '.join([w.strip() for w in lecture]) if lecture else u'null'
-		item['tutorial_time_table'] = res
+		item['tutorial_time_table'] = [w.strip() for w in tutorials] if tutorials else u'null'
 		item['exam'] = exam
 		item['prerequisite'] = prereq[0].strip() if prereq else u'null'
 		item['preclusion'] = preclu[0].strip() if preclu else u'null'
