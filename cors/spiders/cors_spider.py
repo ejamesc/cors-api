@@ -39,8 +39,6 @@ class CorsSpider(CrawlSpider):
 		hxs = HtmlXPathSelector(response)
 		module = hxs.select('id("wrapper")/table/tr[2]/td/table[1]/tr[3]/td/table')
 
-		item = CorsItem()
-
 		# XPath selectors
 		code = module.select('tr[position()=2]/td[position()=2]/text()').extract()
 		name = module.select('tr[position()=3]/td[position()=2]/text()').extract()
@@ -52,10 +50,14 @@ class CorsSpider(CrawlSpider):
 		preclu = module.select('tr[position()=9]/td[position()=2]/text()').extract()
 		workload = module.select('tr[position()=10]/td[position()=2]/text()').extract()
 
+		tutorials = hxs.select('id("wrapper")/table/tr[2]/td/table[1]/tr[3]/td/table[4]/tr[3]/td/div/table[position()>0]/tr/td/text()').extract()
+
 		# encode exam date to ISO8601
 		exam = exam[0].strip() if exam else u'null'
 		if exam != "No Exam Date.":
 			exam = process_exam_date(exam)
+
+		item = CorsItem()
 
 		# strip() removes \n and \r; also note that lecture returns multiple strings in a list
 		item['code'] = ' '.join(code[0].split()) if code else u'null'
@@ -63,6 +65,7 @@ class CorsSpider(CrawlSpider):
 		item['desc'] = desc[0].strip() if desc else u'null'
 		item['mc'] = mc[0].strip() if mc else u'null'
 		item['lecture_time_table'] = u' '.join([w.strip() for w in lecture]) if lecture else u'null'
+		item['tutorial_time_table'] = [l.strip() for l in tutorials] if tutorials else u'null'
 		item['exam'] = exam
 		item['prerequisite'] = prereq[0].strip() if prereq else u'null'
 		item['preclusion'] = preclu[0].strip() if preclu else u'null'

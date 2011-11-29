@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+"""Flask webapp. Exposes a RESTful API.
+"""
 from flask import Flask, url_for, render_template, abort, Response
 from pymongo import Connection
 try:

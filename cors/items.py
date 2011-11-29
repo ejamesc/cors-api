@@ -13,6 +13,7 @@ class CorsItem(Item):
     desc = Field()
     mc = Field()
     lecture_time_table = Field()
+    tutorial_time_table = Field()
     exam = Field()
     prerequisite = Field()
     preclusion = Field()
