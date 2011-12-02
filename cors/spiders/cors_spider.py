@@ -8,6 +8,11 @@ from scrapy.selector import HtmlXPathSelector
 
 from cors.items import CorsItem
 
+def clean(text):
+	"""Removes \r and \n from text
+	"""
+	return ' '.join([w.strip() for w in text.split()])
+
 def process_exam_date(exam):
 	"""Processes an exam date and returns a dict representation for saving to mongodb
 	:param exam string
@@ -20,13 +25,6 @@ def process_exam_date(exam):
 		return {'date': date(int(d[2]), int(d[1]), int(d[0])).isoformat(), 'time': t[1]}
 	except IndexError:
 		return exam
-
-def grouper(n, iterable, fillvalue=None):
-    """Recipe taken from itertools docs
-    grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx
-    """
-    args = [iter(iterable)] * n
-    return izip_longest(fillvalue=fillvalue, *args)
 
 def convert_day(day):
 	mapping = {
@@ -95,8 +93,7 @@ def timeparse(parselist):
 			occurence = occur_re.group(1)
 			# No, I am not kidding you. This is as ugly as they come.
 			res[pos]['sessions'][secondary]['occurence'] = occurence
-			secondary = secondary + 1 # increment secondary
-
+			secondary = secondary + 1 # indicate session number
 	return res
 
 
@@ -143,20 +140,19 @@ class CorsSpider(CrawlSpider):
 
 		item = CorsItem()
 
-		# strip the data in lecture and tutorails
+		# strip the strings in lecture and tutorails
 		lecture = [w.strip() for w in lecture]
 		tutorials = [t.strip() for t in tutorials]
 
-		# strip() removes \n and \r; also note that lecture returns multiple strings in a list
 		item['code'] = ' '.join(code[0].split()) if code else u'null'
 		item['name'] = name[0].strip() if name else u'null'
-		item['desc'] = ' '.join([w.strip() for w in desc[0].split()]) if desc else u'null'
+		item['desc'] = clean(desc[0]) if desc else u'null'
 		item['mc'] = mc[0].strip() if mc else u'null'
 		item['lecture_time_table'] = timeparse(lecture) if lecture else u'null'
 		item['tutorial_time_table'] = timeparse(tutorials) if tutorials else u'null'
 		item['exam'] = exam
-		item['prerequisite'] = prereq[0].strip() if prereq else u'null'
-		item['preclusion'] = preclu[0].strip() if preclu else u'null'
+		item['prerequisite'] = clean(prereq[0]) if prereq else u'null'
+		item['preclusion'] = clean(preclu[0]) if preclu else u'null'
 		item['workload'] = workload[0].strip() if workload else u'null'
 
 		return item
