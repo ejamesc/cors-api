@@ -27,6 +27,8 @@ def process_exam_date(exam):
 		return exam
 
 def convert_day(day):
+	"""Takes day as scraped, and converts it to number representations
+	"""
 	mapping = {
 		'MONDAY': 1,
 		'TUESDAY': 2,
@@ -38,8 +40,49 @@ def convert_day(day):
 	}
 	return mapping.get(day, None)
 
+def convert_occur(text):
+	"""Convert string of occurences to a list of weeks.
+	"""
+	def_weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13]
+	if text == "EVERY WEEK":
+		return def_weeks
+	elif text == "EVEN WEEK":
+		return filter(lambda x: x%2==0, def_weeks)
+	elif text == "ODD WEEK":
+		return filter(lambda x: x%2!=0, def_weeks)
+	else:
+		return [int(e) for e in text.split(',')]
+
 def timeparse(parselist):
-	"""The hairiest piece of parsing code you'll find here.
+	"""The hairiest piece of parsing code you'll find here (sorry)
+	This takes a list of parsed strings, like:
+
+		[u'DESIGN LECTURE Class [1]',
+		u'MONDAY From 1400 hrs to 1800 hrs in AKI2,',
+		u'Week(s): EVERY WEEK.',
+		u'THURSDAY From 1400 hrs to 1800 hrs in AKI2,',
+		u'Week(s): EVERY WEEK.',
+		u'Not Available in Tutorial Balloting yet.'],
+
+	and turns it into this:
+
+		[
+			{
+			'name': DESIGN LECTURE Class [1],
+			'sessions':
+					[{
+						'day': 1,
+						'starttime': '1400',
+						'endtime': '1800',
+						'location': 'AK12',
+						'occurence': [1,2,3,4,5,6,7,8,9,10,11,12,13]
+					}]
+			}
+		]
+
+		There can be many lecture classes in the list. There can also be
+		multiple sessions, which explains why the {day, starttime, endtime etc}
+		dict is stored in a list.
 	"""
 	time = re.compile('(?P<day>\w+) From (?P<starttime>\d+) hrs to (?P<endtime>\d+) hrs in (?P<location>.+),')
 	occur = re.compile('Week\(s\): (.*?)\.')
@@ -90,7 +133,7 @@ def timeparse(parselist):
 				res[pos]['sessions'].append(curr_session)
 
 		if occur_re:
-			occurence = occur_re.group(1)
+			occurence = convert_occur(occur_re.group(1)) # occur_re.group(1) is the grouped regex as above
 			# No, I am not kidding you. This is as ugly as they come.
 			res[pos]['sessions'][secondary]['occurence'] = occurence
 			secondary = secondary + 1 # indicate session number

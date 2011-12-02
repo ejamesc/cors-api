@@ -10,6 +10,7 @@ except ImportError:
 
 app = Flask(__name__)
 
+# mongoDB connection
 connection = Connection()
 db = connection.corsdatabase
 
@@ -28,7 +29,7 @@ def get_all_modules():
 		ls.append(e)
 	return Response(json.dumps(ls), mimetype='application/json')
 
-@app.route('/api/modules/<modulecode>', methods=['GET'])
+@app.route('/api/module/<modulecode>', methods=['GET'])
 def get_module(modulecode):
 	"""Returns details for a specific module
 	:params string modulecode
@@ -41,10 +42,13 @@ def get_module(modulecode):
 
 @app.route('/api/timetable/<modulecode>', methods=['GET'])
 def get_module_time(modulecode):
+	"""Returns lecture and tutorial timetables
+	"""
 	entity = db['modules'].find_one({'code': modulecode})
 	if not entity:
 		abort(404, 'Module %s not found' % modulecode)
-	return Response(json.dumps({'lecture_time_table': entity['lecture_time_table']}),
+	return Response(json.dumps({'lecture_time_table': entity['lecture_time_table'],
+	'tutorial_time_table': entity['tutorial_time_table']}),
 		mimetype='application/json')
 
 if __name__ == '__main__':
