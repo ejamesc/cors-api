@@ -1,4 +1,5 @@
 from datetime import date
+import re
 from itertools import izip_longest
 
 from scrapy.contrib.spiders import CrawlSpider, Rule
@@ -26,6 +27,77 @@ def grouper(n, iterable, fillvalue=None):
     """
     args = [iter(iterable)] * n
     return izip_longest(fillvalue=fillvalue, *args)
+
+def convert_day(day):
+	mapping = {
+		'MONDAY': 1,
+		'TUESDAY': 2,
+		'WEDNESDAY': 3,
+		'THURSDAY': 4,
+		'FRIDAY': 5,
+		'SATURDAY': 6,
+		'SUNDAY': 7
+	}
+	return mapping.get(day, None)
+
+def timeparse(parselist):
+	"""The hairiest piece of parsing code you'll find here.
+	"""
+	time = re.compile('(?P<day>\w+) From (?P<starttime>\d+) hrs to (?P<endtime>\d+) hrs in (?P<location>.+),')
+	occur = re.compile('Week\(s\): (.*?)\.')
+	ballot = re.compile('.*? Tutorial Balloting .*?')
+	nolecture = re.compile('.*? no lectures .*?')
+
+	res = []
+	pos = 0 # pos indicates tutorial or lecture position in the list
+	secondary = 0 # secondary indicates session number, for classes with multiple sessions
+
+	for l in parselist:
+		time_re = time.match(l)
+		occur_re = occur.match(l)
+		ballot_re = ballot.match(l)
+
+		# There are no lectures.
+		if nolecture.match(l):
+			return u'null'
+
+		if not time_re and not occur_re and not ballot_re:
+			# End and start conditions
+			# res is empty
+			if pos == 0 and not res:
+				res.append({'name': l})
+			# res is already populated
+			# then we know this is a secondary lesson slot
+			else:
+				res.append({'name': l})
+				secondary = 0
+				pos = pos+1
+
+		if time_re:
+			day = time_re.group('day')
+			starttime = time_re.group('starttime')
+			endtime = time_re.group('endtime')
+			location = time_re.group('location')
+
+			curr_session = {
+						'day': convert_day(day),
+						'starttime': starttime,
+						'endtime': endtime,
+						'location': location
+						}
+			# if this is the first session
+			if secondary == 0:
+				res[pos]['sessions'] = [curr_session]
+			else:
+				res[pos]['sessions'].append(curr_session)
+
+		if occur_re:
+			occurence = occur_re.group(1)
+			# No, I am not kidding you. This is as ugly as they come.
+			res[pos]['sessions'][secondary]['occurence'] = occurence
+			secondary = secondary + 1 # increment secondary
+
+	return res
 
 
 class CorsSpider(CrawlSpider):
@@ -66,16 +138,22 @@ class CorsSpider(CrawlSpider):
 		exam = exam[0].strip() if exam else u'null'
 		if exam != "No Exam Date.":
 			exam = process_exam_date(exam)
+		else:
+			exam = u'null'
 
 		item = CorsItem()
+
+		# strip the data in lecture and tutorails
+		lecture = [w.strip() for w in lecture]
+		tutorials = [t.strip() for t in tutorials]
 
 		# strip() removes \n and \r; also note that lecture returns multiple strings in a list
 		item['code'] = ' '.join(code[0].split()) if code else u'null'
 		item['name'] = name[0].strip() if name else u'null'
-		item['desc'] = desc[0].strip() if desc else u'null'
+		item['desc'] = ' '.join([w.strip() for w in desc[0].split()]) if desc else u'null'
 		item['mc'] = mc[0].strip() if mc else u'null'
-		item['lecture_time_table'] = u' '.join([w.strip() for w in lecture]) if lecture else u'null'
-		item['tutorial_time_table'] = [w.strip() for w in tutorials] if tutorials else u'null'
+		item['lecture_time_table'] = timeparse(lecture) if lecture else u'null'
+		item['tutorial_time_table'] = timeparse(tutorials) if tutorials else u'null'
 		item['exam'] = exam
 		item['prerequisite'] = prereq[0].strip() if prereq else u'null'
 		item['preclusion'] = preclu[0].strip() if preclu else u'null'
