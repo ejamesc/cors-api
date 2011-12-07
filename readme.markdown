@@ -3,16 +3,18 @@ National University of Singapore Unofficial CORS API
 
 This is an unofficial CORS API. It consists of a Scrapy scraper project and a Flask webapp. The Flask webapp exposes a RESTful API.
 
-The entirety of the webapp is contained in cors.py, a Flask app. Everything else is a Scrapy project. If you just want the scrapy, and don't want the app, just delete cors.py.
+The entirety of the webapp is contained in cors.py, a Flask app. Everything else is a Scrapy project. If you just want the scraper for your own needs, just delete cors.py.
+
+There's nothing unusual about the scraper - it is a typical scrapy project. cors/items.py defines the fields needed for the Item object; cors/spiders/cors_spider.py defines the scraper and includes parsers for timetable data; pipelines.py contains the code to store the scraped data in MongoDB. Full information is available at the scrapy docs: http://doc.scrapy.org/en/0.14/index.html
 
 Dependencies
 ------------
-You need Flask, Scrapy, and Mongodb.
+You need Flask, Scrapy, and MongoDB. If you have pip, run the following to install the first two (easy_install works as well):
 
     pip install Flask
     pip install scrapy
 
-And install Mongodb by heading to the mongodb website and following the instructions there.
+Install MongoDB by heading to the MongoDB website and following the instructions there.
 
 Running a scrape job
 --------------------
@@ -20,7 +22,7 @@ cd into the cors-api directory, and then (assuming you've installed scrapy) run:
 
     scrapy crawl cors
 
-The scrapy project will start crawling the CORS website, and store all data scraped in mongodb.
+The scrapy project will start crawling the CORS website, and store all data scraped in a MongoDB collection called 'modules'.
 
 API details
 -----------
