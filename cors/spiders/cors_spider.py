@@ -141,6 +141,8 @@ def timeparse(parselist):
 
 
 class CorsSpider(CrawlSpider):
+	"""Spider class, used by Scrapy.
+	"""
 	name = "cors"
 	allowed_domains = ["nus.edu.sg"]
 	start_urls = [
