@@ -3,41 +3,60 @@ National University of Singapore Unofficial CORS API
 
 This is an unofficial CORS API. It consists of a Scrapy scraper project and a Flask webapp. The Flask webapp exposes a RESTful API.
 
-RESTful methods
----------------
+The entirety of the webapp is contained in cors.py, a Flask app. Everything else is a Scrapy project. If you just want the scrapy, and don't want the app, just delete cors.py.
+
+Dependencies
+------------
+You need Flask, Scrapy, and Mongodb.
+
+    pip install Flask
+    pip install scrapy
+
+And install Mongodb by heading to the mongodb website and following the instructions there.
+
+Running a scrape job
+--------------------
+cd into the cors-api directory, and then (assuming you've installed scrapy) run:
+
+    scrapy crawl cors
+
+The scrapy project will start crawling the CORS website, and store all data scraped in mongodb.
+
+API details
+-----------
     /api/modules
 
-Returns a full list of data of all the modules.
+Returns a full list of all the modules.
 
-Format reads as:
+An example:
 
 ```json
-    [
-        {'code': 'CL3281',
-	 	'desc': 'This module, designed for Level 2nd-4th year students (not necessarily majoring in Chinese Studies), deals with some problems not specified for attention under CL2280 or CL2281, requiring students to translate some literary works into Chinese and English respectively. Topics will include the relationship between contemporary translation theory and practice, the use of more specific semantic and cultural understanding of the text, as well as more complex formation of textual structures in the process of translation. Special attention will be paid to online resources for translators.',
-	 	'exam': {'date': '2012-04-23', 'time': 'PM'},
-	 	'lecture_time_table': [
-	 		{'name': 'LECTURE Class [1]',
-	        'sessions': [
-	        	{'day': 2,
-	            'endtime': '1700',
-	            'starttime': '1400'
-	            'location': 'AS7/0119',
-	            'occurence': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-	            }]
-	        }
-	    ],
-	 'mc': '4',
-	 'name': 'Advanced Translation',
-	 'preclusion': 'Nil',
-	 'prerequisite': 'CL2280 or CL2281',
-	 'tutorial_time_table': 'null',
-	 'workload': u'3-0-0-2-5'
+ [
+    {'code': 'CL3281',
+	'desc': 'This module, designed for Level 2nd-4th year students (not necessarily majoring in Chinese Studies), deals with some problems not specified for attention under CL2280 or CL2281, requiring students to translate some literary works into Chinese and English respectively. Topics will include the relationship between contemporary translation theory and practice, the use of more specific semantic and cultural understanding of the text, as well as more complex formation of textual structures in the process of translation. Special attention will be paid to online resources for translators.',
+	'exam': {'date': '2012-04-23', 'time': 'PM'},
+	'lecture_time_table': [
+		{'name': 'LECTURE Class [1]',
+	    'sessions': [
+	    	{'day': 2,
+	        'endtime': '1700',
+	        'starttime': '1400'
+	        'location': 'AS7/0119',
+	        'occurence': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+	        }]
+	    }
+	],
+	'mc': '4',
+	'name': 'Advanced Translation',
+	'preclusion': 'Nil',
+	'prerequisite': 'CL2280 or CL2281',
+	'tutorial_time_table': 'null',
+	'workload': u'3-0-0-2-5'
 	},
 	{
-		<list of dicts, each representing one module>
+		<another dict, representing another module>
 	}
-	]
+]
 ```
 
 Note that it returns a list of dictionaries, each dictionary representing a module.
@@ -85,7 +104,8 @@ Returns the details for just that module code, as follows:
 	],
 	'preclusion': 'NIl',
 	'prerequisite': u"Must obtain: 1) At least a B4 for (a) Higher Chinese at GCE 'O' Level, or (b) Chinese Language at GCE 'AO' Level (at GCE 'A' Level examination); OR 2) At least a pass for (a) Chinese at GCE 'A' Level, or (b) Higher Chinese at GCE 'A' Level; OR 3) At least C grade for Chinese Language (H1CL) at GCE 'A' Level; OR 4) At least a pass for (a) Chinese Language and Literature (H2CLL) at GCE 'A' Level, or (b) Chinese Language and Literature (H3CLL) at GCE 'A' Level. 5) Equivalent qualifications may be accepted.",
-	'workload': '2-1-0-2-5'}
+	'workload': '2-1-0-2-5'
+}
 ```
 Note that occurences are a list of numbers representing weeks in the semester. Most modules have classes every week, but some don't. For instance, odd weeks and even weeks are represented with [1,3,5,7,9,11,13] and [2,4,6,8,10,12] respectively.
 
