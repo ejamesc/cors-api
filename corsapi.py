@@ -23,6 +23,8 @@ def get_all_modules():
 	"""Returns all the modules.
 	"""
 	entities = db['modules'].find()
+	if not entities:
+		return Response(json.dumps({"message": "Not Found"}), mimetype='application/json')
 	ls = []
 	for e in entities:
 		del e['_id']
@@ -36,7 +38,7 @@ def get_module(modulecode):
 	"""
 	entity = db['modules'].find_one({'code': modulecode})
 	if not entity:
-		abort(404, 'Module %s not found' % modulecode)
+		return Response(json.dumps({"message": "Not Found"}), mimetype='application/json')
 	del entity['_id'] # the _id object isn't JSON serializable
 	return Response(json.dumps(entity), mimetype='application/json')
 
@@ -46,7 +48,7 @@ def get_module_time(modulecode):
 	"""
 	entity = db['modules'].find_one({'code': modulecode})
 	if not entity:
-		abort(404, 'Module %s not found' % modulecode)
+		return Response(json.dumps({"message": "Not Found"}), mimetype='application/json')
 	return Response(json.dumps({'lecture_time_table': entity['lecture_time_table'],
 	'tutorial_time_table': entity['tutorial_time_table']}),
 		mimetype='application/json')
