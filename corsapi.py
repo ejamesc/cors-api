@@ -11,7 +11,7 @@ except ImportError:
 app = Flask(__name__)
 
 # mongoDB connection
-connection = Connection()
+connection = Connection('localhost', 34006) # the default is 27017
 db = connection.corsdatabase
 
 @app.route('/')
