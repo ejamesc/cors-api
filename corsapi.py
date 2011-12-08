@@ -18,7 +18,7 @@ db = connection.corsdatabase
 def main():
 	return 'Hello World'
 
-@app.route('/api/modules/', methods=['GET'])
+@app.route('/modules/', methods=['GET'])
 def get_all_modules():
 	"""Returns all the modules.
 	"""
@@ -29,7 +29,7 @@ def get_all_modules():
 		ls.append(e)
 	return Response(json.dumps(ls), mimetype='application/json')
 
-@app.route('/api/module/<modulecode>', methods=['GET'])
+@app.route('/module/<modulecode>', methods=['GET'])
 def get_module(modulecode):
 	"""Returns details for a specific module
 	:params string modulecode
@@ -40,7 +40,7 @@ def get_module(modulecode):
 	del entity['_id'] # the _id object isn't JSON serializable
 	return Response(json.dumps(entity), mimetype='application/json')
 
-@app.route('/api/timetable/<modulecode>', methods=['GET'])
+@app.route('/timetable/<modulecode>', methods=['GET'])
 def get_module_time(modulecode):
 	"""Returns lecture and tutorial timetables
 	"""
