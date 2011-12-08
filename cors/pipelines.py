@@ -4,7 +4,7 @@
 # See: http://doc.scrapy.org/topics/item-pipeline.html
 from pymongo import Connection
 
-connection = Connection('localhost', 27017) # alternatively 34006
+connection = Connection('localhost', 34006) # the default is 27017
 db = connection.corsdatabase
 db['modules'].remove({}) #temporary hack - delete all records
 
