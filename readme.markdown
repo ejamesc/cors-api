@@ -26,7 +26,7 @@ The scrapy project will start crawling the CORS website, and store all data scra
 
 API details
 -----------
-    /modules
+    GET /modules
 
 Returns a full list of all the modules.
 
@@ -63,7 +63,7 @@ An example:
 
 Note that it returns a list of dictionaries, each dictionary representing a module.
 
-    /module/:modulecode
+    GET /module/:modulecode
 
 Returns the details for just that module code, as follows:
 
@@ -113,7 +113,7 @@ Note that occurences are a list of numbers representing weeks in the semester. M
 
 Day represents the days of the week, with Monday being 1 and Sunday being 7.
 
-    /timetable/:modulecode
+    GET /timetable/:modulecode
 
 Returns the lecture and tutorial timetables for the module code, like so:
 

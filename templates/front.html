@@ -37,8 +37,9 @@
 <p><strong>Note:</strong> This project is built on Python, MongoDB, Flask and Scrapy. Instructions on how to fork and roll your own may be found in the <a href="https://github.com/nushackers/cors-api/blob/master/readme.markdown">readme over at github.</a></p>
 
 <h2>API Details</h2>
+<p>All API access is over HTTP, and is accessed from the api.nushackers.org domain. All data is received as JSON</p>
 
-<pre><code>/modules</code></pre>
+<pre><code>GET /modules</code></pre>
 
 <p>Returns a list of all the modules. An example:</p>
 
@@ -46,7 +47,7 @@
 
 <p>Note that it returns a list of dictionaries, each dictionary representing a module.</p>
 
-<pre><code>/module/:modulecode
+<pre><code>GET /module/:modulecode
 </code></pre>
 
 <p>Returns the details for just that module code, as follows:</p>
@@ -57,7 +58,7 @@
 
 <p>Day represents the days of the week, with Monday being 1 and Sunday being 7.</p>
 
-<pre><code>/timetable/:modulecode
+<pre><code>GET /timetable/:modulecode
 </code></pre>
 
 <p>Returns the lecture and tutorial timetables for the module code, like so:</p>
