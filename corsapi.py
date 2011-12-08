@@ -16,7 +16,7 @@ db = connection.corsdatabase
 
 @app.route('/')
 def main():
-	return 'Hello World'
+	return render_template('front.html')
 
 @app.route('/modules/', methods=['GET'])
 def get_all_modules():
