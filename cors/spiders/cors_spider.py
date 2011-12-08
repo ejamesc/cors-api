@@ -9,9 +9,10 @@ from scrapy.selector import HtmlXPathSelector
 from cors.items import CorsItem
 
 def clean(text):
-	"""Removes \r and \n from text
+	"""Removes \r and \n from text,
+	Converts unicode entities back to html/xml ones
 	"""
-	return ' '.join([w.strip() for w in text.split()])
+	return u' '.join([w.strip() for w in text.split()]).encode('ascii', 'xmlcharrefreplace')
 
 def process_exam_date(exam):
 	"""Processes an exam date and returns a dict representation for saving to mongodb
