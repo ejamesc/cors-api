@@ -51,12 +51,13 @@ def search_modules(regex):
 	:params string regex
 	"""
 	entities = db['modules'].find({'code': re.compile('%s'%regex) })
-	if not entities:
-		return Response(errorjson, mimetype='application/json')
 	ls = []
 	for e in entities:
 		del e['_id']
+		print e
 		ls.append(e)
+	if not ls:
+		return Response(errorjson, mimetype='application/json')
 	return Response(json.dumps(ls), mimetype='application/json')
 
 @app.route('/timetable/<modulecode>', methods=['GET'])

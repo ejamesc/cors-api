@@ -13,12 +13,13 @@ You need Flask, Scrapy, and MongoDB. If you have pip, run the following to insta
 
     pip install Flask
     pip install scrapy
+    pip install pymongo
 
 Install MongoDB by heading to the MongoDB website and following the instructions there.
 
 Running a scrape job
 --------------------
-cd into the cors-api directory, and then (assuming you've installed scrapy) run:
+cd into the cors-api directory. The scrapy project writes to MongoDB, so make sure mongod is running. Then (assuming you've installed scrapy) run:
 
     scrapy crawl cors
 
@@ -151,7 +152,9 @@ Returns the lecture and tutorial timetables for the module code, like so:
 }
 ```
 
+    GET /modules/search/:regex
 
+Returns a list of modules that matches the appended regex. So for instance /modules/search/CS would return all the CS-prefix modules. And running modules/search/IS4 would return all the IS level 4 modules.
 
 Work-in-progress notes:
 -----------------------
