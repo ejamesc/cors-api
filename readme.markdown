@@ -152,6 +152,8 @@ Returns the lecture and tutorial timetables for the module code, like so:
 }
 ```
 
+To perform a rudimentary search:
+
     GET /modules/search/:regex
 
 Returns a list of modules that matches the appended regex. So for instance /modules/search/CS would return all the CS-prefix modules. And running modules/search/IS4 would return all the IS level 4 modules.

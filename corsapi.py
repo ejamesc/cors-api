@@ -54,7 +54,6 @@ def search_modules(regex):
 	ls = []
 	for e in entities:
 		del e['_id']
-		print e
 		ls.append(e)
 	if not ls:
 		return Response(errorjson, mimetype='application/json')
