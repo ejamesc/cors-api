@@ -47,6 +47,13 @@
 
 <p>Note that it returns a list of dictionaries, each dictionary representing a module.</p>
 
+<p>To perform a regex search:</p>
+
+<pre><code>GET /modules/search/:regex
+</code></pre>
+
+<p>Returns a list of modules that matches the appended regex. So for instance <code>/modules/search/CS</code> would return all the CS-prefix modules. And running <code>modules/search/IS4</code> would return all the IS level 4 modules.</p>
+
 <pre><code>GET /module/:modulecode
 </code></pre>
 
@@ -65,12 +72,6 @@
 
 <script src="https://gist.github.com/1447330.js"> </script>
 
-<p>To perform a rudimentary search:</p>
-
-<pre><code>GET /modules/search/:regex
-</code></pre>
-
-<p>Returns a list of modules that matches the appended regex. So for instance <code>/modules/search/CS</code> would return all the CS-prefix modules. And running <code>modules/search/IS4</code> would return all the IS level 4 modules.</p>
 <br/><br/>
 <p style="float: right"><em>Built by an army of <a href="http://nushackers.org">crazy IT buggers</a>.</em></p>
 </div>
