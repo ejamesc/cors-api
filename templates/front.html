@@ -28,16 +28,16 @@
 
 <p>This is an unofficial CORS API, built on the side in a couple of days during the 2011 December holidays. Source code is available <a href="https://github.com/nushackers/cors-api"> on Github</a>. API details follow (documentation on the code itself is found on the Github page).</p>
 
-<p>There are two reasons for doing this: in the best case, we intend to ask the CORS team in NUS to implement a RESTful API (and we don't mind helping them with it - if anything, this project shows that the easy bit is the design and implementation of the API; the hard bit is in the scraping and parsing of data).</p>
+<p>There are two reasons for doing this: in the best case, we intend to ask the CORS team in NUS to implement a RESTful API (and we don't mind doing it for them - if anything, this project shows that the easy bit is the design and implementation of the API; the hard bit is in the scraping and parsing of data).</p>
 
 <p>Should this approach fail, the NUS Hackers will host and maintain this API for as long as is needed.</p>
 
-<p>If the second scenario comes to pass, please submit issues, bugs, or pull requests <a href="https://github.com/nushackers/cors-api">on Github</a>. <strong>We're doing this because we think it's good for student developers in NUS.</strong> If you're into things like this, you find programming fun, or you want to write software for the betterment of society, come join us at <a href="http://nushackers.org">nushackers.org</a></p>
+<p>If the second scenario comes to pass, please submit bug reports, feature requests, or pull requests <a href="https://github.com/nushackers/cors-api">on Github</a>. <strong>We're doing this because we think it's good for student developers in NUS.</strong> If you're into things like this; you find programming fun, or you want to write software for the betterment of society, come join us at <a href="http://nushackers.org">nushackers.org</a></p>
 
 <p><strong>Note:</strong> This project is built on Python, MongoDB, Flask and Scrapy. Instructions on how to fork and roll your own may be found in the <a href="https://github.com/nushackers/cors-api/blob/master/readme.markdown">readme over at github.</a></p>
 
 <h2>API Details</h2>
-<p>All API access is over HTTP, and is accessed from the api.nushackers.org domain. All data is received as JSON</p>
+<p>All API access is over HTTP, and is accessed from the api.nushackers.org domain. All data is received as JSON.</p>
 
 <pre><code>GET /modules</code></pre>
 
@@ -64,6 +64,13 @@
 <p>Returns the lecture and tutorial timetables for the module code, like so:</p>
 
 <script src="https://gist.github.com/1447330.js"> </script>
+
+<p>To perform a rudimentary search:</p>
+
+<pre><code>GET /modules/search/:regex
+</code></pre>
+
+<p>Returns a list of modules that matches the appended regex. So for instance <code>/modules/search/CS</code> would return all the CS-prefix modules. And running <code>modules/search/IS4</code> would return all the IS level 4 modules.</p>
 <br/><br/>
 <p style="float: right"><em>Built by an army of <a href="http://nushackers.org">crazy IT buggers</a>.</em></p>
 </div>

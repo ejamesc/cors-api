@@ -13,12 +13,13 @@ You need Flask, Scrapy, and MongoDB. If you have pip, run the following to insta
 
     pip install Flask
     pip install scrapy
+    pip install pymongo
 
 Install MongoDB by heading to the MongoDB website and following the instructions there.
 
 Running a scrape job
 --------------------
-cd into the cors-api directory, and then (assuming you've installed scrapy) run:
+cd into the cors-api directory. The scrapy project writes to MongoDB, so make sure mongod is running. Then (assuming you've installed scrapy) run:
 
     scrapy crawl cors
 
@@ -53,7 +54,7 @@ An example:
 	'preclusion': 'Nil',
 	'prerequisite': 'CL2280 or CL2281',
 	'tutorial_time_table': 'null',
-	'workload': u'3-0-0-2-5'
+	'workload': '3-0-0-2-5'
 	},
 	{
 		<another dict, representing another module>
@@ -80,12 +81,12 @@ Returns the details for just that module code, as follows:
 	    		{'day': 3,
 	            'endtime': '1800',
 	            'starttime': '1600',
-	            'location': u'AS7/0101',
+	            'location': 'AS7/0101',
 	            'occurence': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
 	            }]
 	    }],
 	'tutorial_time_table': [
-		{'name': u'TUTORIAL Class [E1]',
+		{'name': 'TUTORIAL Class [E1]',
 	    'sessions': [
 	    	{'day': 3,
 	        'endtime': '1400',
@@ -151,7 +152,11 @@ Returns the lecture and tutorial timetables for the module code, like so:
 }
 ```
 
+To perform a rudimentary search:
 
+    GET /modules/search/:regex
+
+Returns a list of modules that matches the appended regex. So for instance /modules/search/CS would return all the CS-prefix modules. And running modules/search/IS4 would return all the IS level 4 modules.
 
 Work-in-progress notes:
 -----------------------

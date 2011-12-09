@@ -15,6 +15,8 @@ app = Flask(__name__)
 connection = Connection('localhost', 34006) # the default is 27017
 db = connection.corsdatabase
 
+errorjson = json.dumps({"message": "Not Found"})
+
 @app.route('/')
 def main():
 	return render_template('front.html')
@@ -25,7 +27,7 @@ def get_all_modules():
 	"""
 	entities = db['modules'].find()
 	if not entities:
-		return Response(json.dumps({"message": "Not Found"}), mimetype='application/json')
+		return Response(errorjson, mimetype='application/json')
 	ls = []
 	for e in entities:
 		del e['_id']
@@ -39,7 +41,7 @@ def get_module(modulecode):
 	"""
 	entity = db['modules'].find_one({'code': modulecode})
 	if not entity:
-		return Response(json.dumps({"message": "Not Found"}), mimetype='application/json')
+		return Response(errorjson, mimetype='application/json')
 	del entity['_id'] # the _id object isn't JSON serializable
 	return Response(json.dumps(entity), mimetype='application/json')
 
@@ -49,21 +51,22 @@ def search_modules(regex):
 	:params string regex
 	"""
 	entities = db['modules'].find({'code': re.compile('%s'%regex) })
-	if not entities:
-		return Response(json.dumps({"message": "No matches"}), mimetype='application/json')
 	ls = []
 	for e in entities:
 		del e['_id']
 		ls.append(e)
+	if not ls:
+		return Response(errorjson, mimetype='application/json')
 	return Response(json.dumps(ls), mimetype='application/json')
 
 @app.route('/timetable/<modulecode>', methods=['GET'])
 def get_module_time(modulecode):
 	"""Returns lecture and tutorial timetables
+	:params string modulecode
 	"""
 	entity = db['modules'].find_one({'code': modulecode})
 	if not entity:
-		return Response(json.dumps({"message": "Not Found"}), mimetype='application/json')
+		return Response(errorjson, mimetype='application/json')
 	return Response(json.dumps({'lecture_time_table': entity['lecture_time_table'],
 	'tutorial_time_table': entity['tutorial_time_table']}),
 		mimetype='application/json')
