@@ -3,6 +3,7 @@
 """
 from flask import Flask, url_for, render_template, abort, Response
 from pymongo import Connection
+import re
 try:
 	import simplejson as json
 except ImportError:
@@ -41,6 +42,20 @@ def get_module(modulecode):
 		return Response(json.dumps({"message": "Not Found"}), mimetype='application/json')
 	del entity['_id'] # the _id object isn't JSON serializable
 	return Response(json.dumps(entity), mimetype='application/json')
+
+@app.route('/modules/search/<regex>', methods=['GET'])
+def search_modules(regex):
+	"""Returns details for all modules that match given regex
+	:params string regex
+	"""
+	entities = db['modules'].find({'code': re.compile('%s'%regex) })
+	if not entities:
+		return Response(json.dumps({"message": "No matches"}), mimetype='application/json')
+	ls = []
+	for e in entities:
+		del e['_id']
+		ls.append(e)
+	return Response(json.dumps(ls), mimetype='application/json')
 
 @app.route('/timetable/<modulecode>', methods=['GET'])
 def get_module_time(modulecode):
