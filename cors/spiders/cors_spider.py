@@ -23,22 +23,22 @@ def process_exam_date(exam):
 	try:
 		t = exam.split()
 		d = t[0].split('-')
-		return {'date': date(int(d[2]), int(d[1]), int(d[0])).isoformat(), 'time': t[1]}
+		return {'date': date(int(d[2]), int(d[1]), int(d[0])), 'time': t[1]}
 	except IndexError:
 		return exam
 
+mapping = {
+	'MONDAY': 1,
+	'TUESDAY': 2,
+	'WEDNESDAY': 3,
+	'THURSDAY': 4,
+	'FRIDAY': 5,
+	'SATURDAY': 6,
+	'SUNDAY': 7
+}
 def convert_day(day):
 	"""Takes day as scraped, and converts it to number representations
 	"""
-	mapping = {
-		'MONDAY': 1,
-		'TUESDAY': 2,
-		'WEDNESDAY': 3,
-		'THURSDAY': 4,
-		'FRIDAY': 5,
-		'SATURDAY': 6,
-		'SUNDAY': 7
-	}
 	return mapping.get(day, None)
 
 def convert_occur(text):
