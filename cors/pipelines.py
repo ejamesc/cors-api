@@ -21,6 +21,8 @@ SEM_START = datetime(2012,1,9,0,0,tzinfo=SGT())
 RECESS_WEEK = 7
 TOTAL_WEEKS = 14
 WEEK2ACTUAL=[1,2,3,4,5,6,8,9,10,11,12,13,14]
+WEEKDAY=['MO','TU','WE','TH','FR','SA','SU']
+
 week = timedelta(days=7)
 day = timedelta(days=1)
 hour = timedelta(hours=1)
@@ -62,7 +64,7 @@ class CorsPipeline(object):
 					ts_hr,ts_min = ts/100, ts%100
 					te_hr,te_min = te/100, te%100
 					
-					combstr = ','.join([str(WEEK2ACTUAL[i-1]+startweek) for i in lec['occurence']])
+					combstr = ','.join([str(WEEK2ACTUAL[i-1]+startweek-1) for i in lec['occurence']])
 
 					lectureday = SEM_START + (dow-1)*day 
 					lecture = Event()
@@ -70,8 +72,8 @@ class CorsPipeline(object):
 					setstartend(lecture,
 							lectureday + ts_hr*hour + ts_min*minute,
 							lectureday + te_hr*hour + te_min*minute)
-					lecture['RRULE'] = 'FREQ=YEARLY;BYWEEKNO=%s;'%combstr
-
+					lecture['rrule'] = 'FREQ=YEARLY;BYWEEKNO=%s;BYDAY=%s' % (combstr,WEEKDAY[lec['day']-1])
+					lecture['location'] = lec['location']
 					cal.add_component(lecture)
 
 		if item['tutorial_time_table'] != 'null':
@@ -83,21 +85,28 @@ class CorsPipeline(object):
 					ts_hr,ts_min = ts/100, ts%100
 					te_hr,te_min = te/100, te%100
 
-					combstr = ','.join([str(WEEK2ACTUAL[i-1]+startweek) for i in tut['occurence']])
+					combstr = ','.join([str(WEEK2ACTUAL[i-1]+startweek-1) for i in tut['occurence'] if i!=1 ]) #precautionary check
 
-					tutday = SEM_START + (dow-1)*day
+					tutday = SEM_START + (dow-1)*day + (WEEK2ACTUAL[
+						(tut['occurence'][0] if tut['occurence'][0] != 1 else tut['occurence'][1]) - 1 #another stupid check, tutorials really shouldn't start on 1st week.
+					]-1)*week
 					tutorial = Event()
 					tutorial.add('summary', '%s %s' % (item['code'],t['name']))
 					setstartend(tutorial,
 							tutday + ts_hr*hour + ts_min*minute,
 							tutday + te_hr*hour + te_min*minute)
-					tutorial['RRULE'] = 'FREQ=YEARLY;BYWEEKNO=%s;'%combstr
+					tutorial['rrule'] = 'FREQ=YEARLY;BYWEEKNO=%s;BYDAY=%s' % (combstr,WEEKDAY[tut['day']-1])
+					tutorial['location'] = tut['location']
 					cal.add_component(tutorial)
 
-		f = open(os.path.join('ics','%s.ics'%item['code']),'wb')
+		f = open(os.path.join('ics',('%s.ics'%item['code'].split()[0])),'wb')
 		f.write(cal.as_string())
 		f.close()
 		return item
 def setstartend(event,start,end):
 	event['dtstart'] = vDatetime(start).ical()
 	event['dtend'] = vDatetime(end).ical()
+	event['dtstamp'] = vDatetime(datetime.now()).ical()
+	#event['uid'] = '%s/shawn@wtf.sg'%vDatetime(datetime.now()).ical()
+	event['sequence'] = 0
+
