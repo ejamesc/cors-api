@@ -38,7 +38,7 @@ class CorsPipeline(object):
 		cal = Calendar()
 		cal.add('calscale','GREGORIAN')
 		cal.add('version','2.0')
-
+		cal['method'] = 'PUBLISH'
 		if item['exam'] != 'null':
 			exam = Event()
 			exam.add('summary', '%s exam %s'%(item['code'],item['exam']['time']))
