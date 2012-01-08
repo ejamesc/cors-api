@@ -23,7 +23,7 @@ def process_exam_date(exam):
 	try:
 		t = exam.split()
 		d = t[0].split('-')
-		return {'date': date(int(d[2]), int(d[1]), int(d[0])), 'time': t[1]}
+		return {'date': date(int(d[2]), int(d[1]), int(d[0])).isoformat(), 'time': t[1]}
 	except IndexError:
 		return exam
 
@@ -108,12 +108,15 @@ def timeparse(parselist):
 			# res is empty
 			if pos == 0 and not res:
 				res.append({'name': l})
-			# res is already populated
+			# res is already populated and we know l exists
 			# then we know this is a secondary lesson slot
-			else:
+			elif l:
 				res.append({'name': l})
 				secondary = 0
 				pos = pos+1
+			# otherwise, bugfix for added table that causes name to be empty.
+			else:
+				pass
 
 		if time_re:
 			day = time_re.group('day')
