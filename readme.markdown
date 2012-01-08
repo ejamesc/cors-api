@@ -64,6 +64,12 @@ An example:
 
 Note that it returns a list of dictionaries, each dictionary representing a module.
 
+To perform a regex search:
+
+    GET /modules/search/:regex
+
+Returns a list of modules that matches the appended regex. So for instance /modules/search/CS would return all the CS-prefix modules. And running modules/search/IS4 would return all the IS level 4 modules.
+
     GET /module/:modulecode
 
 Returns the details for just that module code, as follows:
@@ -151,12 +157,6 @@ Returns the lecture and tutorial timetables for the module code, like so:
 	]
 }
 ```
-
-To perform a rudimentary search:
-
-    GET /modules/search/:regex
-
-Returns a list of modules that matches the appended regex. So for instance /modules/search/CS would return all the CS-prefix modules. And running modules/search/IS4 would return all the IS level 4 modules.
 
 Work-in-progress notes:
 -----------------------

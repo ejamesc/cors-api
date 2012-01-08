@@ -23,7 +23,7 @@ def process_exam_date(exam):
 	try:
 		t = exam.split()
 		d = t[0].split('-')
-		return {'date': date(int(d[2]), int(d[1]), int(d[0])).isoformat(), 'time': t[1]}
+		return {'date': date(int(d[2]), int(d[1]), int(d[0])), 'time': t[1]}
 	except IndexError:
 		return exam
 
@@ -108,15 +108,12 @@ def timeparse(parselist):
 			# res is empty
 			if pos == 0 and not res:
 				res.append({'name': l})
-			# res is already populated and we know l exists
+			# res is already populated
 			# then we know this is a secondary lesson slot
-			elif l:
+			else:
 				res.append({'name': l})
 				secondary = 0
 				pos = pos+1
-			# otherwise, bugfix for added table that causes name to be empty.
-			else:
-				pass
 
 		if time_re:
 			day = time_re.group('day')
@@ -198,7 +195,11 @@ class CorsSpider(CrawlSpider):
 		item['desc'] = clean(desc[0]) if desc else u'null'
 		item['mc'] = mc[0].strip() if mc else u'null'
 		item['lecture_time_table'] = timeparse(lecture) if lecture else u'null'
-		item['tutorial_time_table'] = timeparse(tutorials) if tutorials else u'null'
+		tuts = item['tutorial_time_table'] = timeparse(tutorials) if tutorials else u'null'
+		if tuts != u'null':
+			for t in tuts:
+				for s in tuts['sessions']:
+					s['occurence'].remove(1)
 		item['exam'] = exam
 		item['prerequisite'] = clean(prereq[0]) if prereq else u'null'
 		item['preclusion'] = clean(preclu[0]) if preclu else u'null'
