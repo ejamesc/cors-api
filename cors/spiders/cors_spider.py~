@@ -195,7 +195,11 @@ class CorsSpider(CrawlSpider):
 		item['desc'] = clean(desc[0]) if desc else u'null'
 		item['mc'] = mc[0].strip() if mc else u'null'
 		item['lecture_time_table'] = timeparse(lecture) if lecture else u'null'
-		item['tutorial_time_table'] = timeparse(tutorials) if tutorials else u'null'
+		tuts = item['tutorial_time_table'] = timeparse(tutorials) if tutorials else u'null'
+		if tuts != u'null':
+			for t in tuts:
+				for s in tuts['sessions']:
+					s['occurence'].remove(1)
 		item['exam'] = exam
 		item['prerequisite'] = clean(prereq[0]) if prereq else u'null'
 		item['preclusion'] = clean(preclu[0]) if preclu else u'null'
