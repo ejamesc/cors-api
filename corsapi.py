@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Flask webapp. Exposes a RESTful API.
 """
-from flask import Flask, url_for, render_template, abort, Response
+from flask import Flask, url_for, render_template, abort, Response, request
 import gc
 from pymongo import Connection
 import re
@@ -11,6 +11,19 @@ except ImportError:
 	import json
 
 app = Flask(__name__)
+
+def js_response_helper(dataJson, mime):
+	"""Assumes that callback is last arg.
+	"""
+	res = ""
+	url = request.url
+	if url.find("callback=") != -1:
+		first_index = url.find("callback=") + 9
+		res = url[first_index:] + "(" + dataJson + ");"
+	else:
+		res = dataJson
+	return Response(res, mimetype=mime)
+
 
 # mongoDB connection
 connection = Connection('localhost', 34006) # the default is 27017
@@ -28,13 +41,12 @@ def get_all_modules():
 	"""
 	entities = db['modules'].find()
 	if not entities:
-		return Response(errorjson, mimetype='application/json')
+		return js_response_helper(errorjson, 'application/json')
 	ls = []
 	for e in entities:
 		del e['_id']
 		ls.append(e)
-	gc.collect()
-	return Response(json.dumps(ls), mimetype='application/json')
+	return js_response_helper(json.dumps(ls), 'application/json')
 
 @app.route('/module/<modulecode>', methods=['GET'])
 def get_module(modulecode):
@@ -43,10 +55,9 @@ def get_module(modulecode):
 	"""
 	entity = db['modules'].find_one({'code': modulecode})
 	if not entity:
-		return Response(errorjson, mimetype='application/json')
+		return js_response_helper(errorjson, 'application/json')
 	del entity['_id'] # the _id object isn't JSON serializable
-	gc.collect()
-	return Response(json.dumps(entity), mimetype='application/json')
+	return js_response_helper(json.dumps(entity), 'application/json')
 
 @app.route('/modules/search/<regex>', methods=['GET'])
 def search_modules(regex):
@@ -58,10 +69,9 @@ def search_modules(regex):
 	for e in entities:
 		del e['_id']
 		ls.append(e)
-	gc.collect()
 	if not ls:
-		return Response(errorjson, mimetype='application/json')
-	return Response(json.dumps(ls), mimetype='application/json')
+		return js_response_helper(errorjson, 'application/json')
+	return js_response_helper(json.dumps(ls), 'application/json')
 
 @app.route('/timetable/<modulecode>', methods=['GET'])
 def get_module_time(modulecode):
@@ -70,11 +80,10 @@ def get_module_time(modulecode):
 	"""
 	entity = db['modules'].find_one({'code': modulecode})
 	if not entity:
-		return Response(errorjson, mimetype='application/json')
-	gc.collect()
-	return Response(json.dumps({'lecture_time_table': entity['lecture_time_table'],
+		return js_response_helper(errorjson, 'application/json')
+	return js_response_helper(json.dumps({'lecture_time_table': entity['lecture_time_table'],
 	'tutorial_time_table': entity['tutorial_time_table']}),
-		mimetype='application/json')
+		'application/json')
 
 if __name__ == '__main__':
 	app.run(debug=True)
