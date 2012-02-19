@@ -33,7 +33,6 @@ def get_all_modules():
 	for e in entities:
 		del e['_id']
 		ls.append(e)
-	gc.collect()
 	return Response(json.dumps(ls), mimetype='application/json')
 
 @app.route('/module/<modulecode>', methods=['GET'])
@@ -45,7 +44,6 @@ def get_module(modulecode):
 	if not entity:
 		return Response(errorjson, mimetype='application/json')
 	del entity['_id'] # the _id object isn't JSON serializable
-	gc.collect()
 	return Response(json.dumps(entity), mimetype='application/json')
 
 @app.route('/modules/search/<regex>', methods=['GET'])
@@ -58,7 +56,6 @@ def search_modules(regex):
 	for e in entities:
 		del e['_id']
 		ls.append(e)
-	gc.collect()
 	if not ls:
 		return Response(errorjson, mimetype='application/json')
 	return Response(json.dumps(ls), mimetype='application/json')
@@ -71,7 +68,6 @@ def get_module_time(modulecode):
 	entity = db['modules'].find_one({'code': modulecode})
 	if not entity:
 		return Response(errorjson, mimetype='application/json')
-	gc.collect()
 	return Response(json.dumps({'lecture_time_table': entity['lecture_time_table'],
 	'tutorial_time_table': entity['tutorial_time_table']}),
 		mimetype='application/json')
