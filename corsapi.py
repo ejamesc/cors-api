@@ -17,9 +17,11 @@ def js_response_helper(dataJson, mime):
 	"""
 	res = ""
 	url = request.url
-	if url.find("callback=") != -1:
-		first_index = url.find("callback=") + 9
-		res = url[first_index:] + "(" + dataJson + ");"
+	cb = re.compile('callback=([^&]*)')
+	la = cb.search(url)
+	if la:
+		res = la.expand("\g<1>")
+		res = res + "(" + dataJson + ");"
 	else:
 		res = dataJson
 	return Response(res, mimetype=mime)
